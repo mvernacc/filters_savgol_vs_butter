@@ -34,10 +34,10 @@ window_length = savgol_window_length(ORDER, fc / fs)
 x_savgol = savgol_filter(x_noisy, window_length, ORDER)
 
 # Plot the true signal, noisy measurements, and filtered signals.
-fig, ax1 = plt.subplots(1, 1, figsize=(8, 6))
+fig, ax = plt.subplots(1, 1, figsize=(8, 6))
 
-ax1.plot(t, x_true, color="black", linestyle="--", label="true", zorder=3)
-ax1.plot(
+ax.plot(t, x_true, color="black", linestyle="--", label="true", zorder=3)
+ax.plot(
     t,
     x_noisy,
     marker=".",
@@ -45,38 +45,50 @@ ax1.plot(
     color="gray",
     label=f"noisy, $f_s$ = {fs:.1f} Hz",
 )
-ax1.plot(
+ax.plot(
     t,
     x_butter_fore_back,
     color="tab:blue",
     linewidth=3.0,
     label=f"butter forward-back, order={ORDER}, cutoff={fc:.1f} Hz",
 )
-ax1.plot(
+ax.plot(
     t,
     x_butter_fore,
     color="tab:red",
     label=f"butter forward-only, order={ORDER}, cutoff={fc:.1f} Hz",
 )
-ax1.plot(
+ax.plot(
     t,
     x_savgol,
     color="tan",
     label=f"savgol window_length={window_length:d}, polyorder={ORDER:d}",
 )
 
-ax1.legend(loc="upper left")
-ax1.set_xlabel("Time [s]")
-ax1.set_ylabel("Amplitude [a.u.]")
-ax1.grid(which="both", linestyle="--", linewidth=0.5)
+ax.legend(loc="upper left")
+ax.set_xlabel("Time [s]")
+ax.set_ylabel("Amplitude [a.u.]")
+ax.grid(which="both", linestyle="--", linewidth=0.5)
 plt.tight_layout()
 
-ax1.set_xlim((5.0, 6.0))
-ax1.set_ylim((0.05, 0.25))
+# The figure created by this script is licensed under Creative Commons CC BY 4.0
+# https://creativecommons.org/licenses/by/4.0/
+ax.text(
+    0.98,
+    0.98,
+    "M. Vernacchia\n2025, CC BY 4.0",
+    transform=ax.transAxes,
+    va="top",
+    ha="right",
+    color="gray",
+)
+
+ax.set_xlim((6.65, 7.28))
+ax.set_ylim((0.80, 1.10))
 fig.savefig("example_time_domain_detail.png", dpi=200)
 
-ax1.set_xlim((0.0, t[-1]))
-ax1.set_ylim((-0.3, 1.3))
+ax.set_xlim((0.0, t[-1]))
+ax.set_ylim((-0.3, 1.3))
 fig.savefig("example_time_domain.png", dpi=200)
 
 plt.show()
