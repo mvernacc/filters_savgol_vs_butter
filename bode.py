@@ -32,7 +32,8 @@ def freqz_savgol(window_length: int, polyorder: int):
 
 
 # Plot Bode magnitude and phase response
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 6))
+fig, axes = plt.subplots(2, 1, figsize=(8, 6))
+ax1, ax2 = axes
 
 cutoff = 0.01  # cutoff frequency / sample frequency
 for (w, h, label), style in [
@@ -56,22 +57,38 @@ for (w, h, label), style in [
 ax1.axvline(cutoff, color="black")
 ax1.set_title("Bode Plot of Zero-Phase Butterworth vs. Savitzky-Golay Filters")
 ax1.set_ylim((-80, 3))
-ax1.set_xlim((1.0 / N, 0.5))
 ax1.set_ylabel("Magnitude [dB]")
-ax1.grid(which="both", linestyle="--", linewidth=0.5)
 ax1.legend(loc="lower left")
 
 ax1.text(0.2, 0.7, "Both have gain = 1\nin pass band", transform=ax1.transAxes)
-ax1.text(0.6, 0.8, "butter suppresses high frequencies\nbetter than savgol", transform=ax1.transAxes)
+ax1.text(
+    0.6,
+    0.8,
+    "butter suppresses high frequencies\nbetter than savgol",
+    transform=ax1.transAxes,
+)
 
 ax2.axvline(cutoff, color="black")
+ax2.set_ylim((-180, 180))
 ax2.set_xlabel("Frequency / sample frequency [dimensionless]")
 ax2.set_ylabel("Phase [degrees]")
-ax2.set_xlim((1.0 / N, 0.5))
-ax2.set_ylim((-180, 180))
-ax2.grid(which="both", linestyle="--", linewidth=0.5)
 
 ax2.text(0.1, 0.6, "Both have zero phase delay", transform=ax2.transAxes)
+
+for ax in axes:
+    ax.set_xlim((1.0 / N, 0.5))
+    ax.grid(which="both", linestyle="--", linewidth=0.5)
+    # The figure created by this script is licensed under Creative Commons CC BY 4.0
+    # https://creativecommons.org/licenses/by/4.0/
+    ax.text(
+        0.98,
+        0.02,
+        "M. Vernacchia\n2025, CC BY 4.0",
+        transform=ax.transAxes,
+        va="bottom",
+        ha="right",
+        color="gray",
+    )
 
 plt.tight_layout()
 fig.savefig("bode.png", dpi=200)
