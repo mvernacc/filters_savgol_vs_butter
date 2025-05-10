@@ -8,3 +8,6 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Do not commit the generate png images.
+*.png

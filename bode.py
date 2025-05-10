@@ -1,10 +1,12 @@
+"""This script compares Butterworth forward-backward and Savitzky-Golay filters on a Bode plot."""
+
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import butter, freqz, freqz_sos, savgol_coeffs
 
 from helpers import savgol_window_length
 
-N = 4 * 1024
+N = 4096  # Number of frequencies to examine on the Bode plot
 
 
 def freqz_butter_forward_back(order: int, cutoff: float):
@@ -33,22 +35,23 @@ def freqz_savgol(window_length: int, polyorder: int):
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 6))
 
 cutoff = 0.01  # cutoff frequency / sample frequency
-for (w, h, label), color, ls in [
-    (freqz_butter_forward_back(5, cutoff), "tab:blue", "-"),
-    # (freqz_butter_forward_only(5, cutoff), "tab:red", "-"),
-    (freqz_savgol(savgol_window_length(5, cutoff), 5), "xkcd:tan", "--"),
+for (w, h, label), style in [
+    (
+        freqz_butter_forward_back(5, cutoff),
+        dict(color="tab:blue", linewidth=3.0),
+    ),
+    (
+        freqz_savgol(savgol_window_length(5, cutoff), 5),
+        dict(color="tan"),
+    ),
 ]:
     freqs = w / (2.0 * np.pi)
-    ax1.semilogx(
-        freqs, 20 * np.log10(np.abs(h)), label=label, color=color, linestyle=ls
-    )  # Magnitude response
+    # Magnitude response
+    ax1.semilogx(freqs, 20 * np.log10(np.abs(h)), label=label, **style)
+    # Phase response
     ax2.semilogx(
-        freqs,
-        np.unwrap(np.angle(h, deg=True), period=180),
-        label=label,
-        color=color,
-        linestyle=ls,
-    )  # Phase response
+        freqs, np.unwrap(np.angle(h, deg=True), period=180), label=label, **style
+    )
 
 ax1.axvline(cutoff, color="black")
 ax1.set_title("Bode Plot of Zero-Phase Butterworth vs. Savitzky-Golay Filters")
@@ -58,12 +61,17 @@ ax1.set_ylabel("Magnitude [dB]")
 ax1.grid(which="both", linestyle="--", linewidth=0.5)
 ax1.legend(loc="lower left")
 
+ax1.text(0.2, 0.7, "Both have gain = 1\nin pass band", transform=ax1.transAxes)
+ax1.text(0.6, 0.8, "butter suppresses high frequencies\nbetter than savgol", transform=ax1.transAxes)
+
 ax2.axvline(cutoff, color="black")
 ax2.set_xlabel("Frequency / sample frequency [dimensionless]")
 ax2.set_ylabel("Phase [degrees]")
 ax2.set_xlim((1.0 / N, 0.5))
 ax2.set_ylim((-180, 180))
 ax2.grid(which="both", linestyle="--", linewidth=0.5)
+
+ax2.text(0.1, 0.6, "Both have zero phase delay", transform=ax2.transAxes)
 
 plt.tight_layout()
 fig.savefig("bode.png", dpi=200)
